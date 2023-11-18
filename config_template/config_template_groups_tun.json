@@ -108,13 +108,15 @@
         "auto",
         "direct",
         "{all}"
-      ]
+      ],
+      "default":"auto"
     },
     {
       "tag":"🤖 OpenAI",
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ],
       "filter":[
@@ -125,6 +127,7 @@
       "tag":"🌌 Google",
       "type":"selector",
       "outbounds":[
+        "proxy",
         "{all}"
       ]
     },
@@ -132,6 +135,7 @@
       "tag":"📟 Telegram",
       "type":"selector",
       "outbounds":[
+        "proxy",
         "{all}"
       ]
     },
@@ -139,6 +143,7 @@
       "tag":"🐦 Twitter",
       "type":"selector",
       "outbounds":[
+        "proxy",
         "{all}"
       ]
     },
@@ -146,6 +151,7 @@
       "tag":"👤 Facebook",
       "type":"selector",
       "outbounds":[
+        "proxy",
         "{all}"
       ]
     },
@@ -154,6 +160,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ]
     },
@@ -162,6 +169,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ]
     },
@@ -170,6 +178,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ]
     },
@@ -178,6 +187,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ]
     },
@@ -186,6 +196,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ],
       "filter":[
@@ -197,6 +208,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ]
     },
@@ -205,6 +217,7 @@
       "type":"selector",
       "outbounds":[
         "direct",
+        "proxy",
         "{all}"
       ]
     },
@@ -213,7 +226,8 @@
       "type":"selector",
       "outbounds":[
         "direct",
-        "proxy"
+        "proxy",
+        "{all}"
       ]
     },
     {
@@ -231,7 +245,7 @@
         "{all}"
       ],
       "url": "http://www.gstatic.com/generate_204",
-      "interval": "1m",
+      "interval": "5m",
       "tolerance": 50
     },
     {
