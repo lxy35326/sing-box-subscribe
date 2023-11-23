@@ -1,0 +1,455 @@
+{
+    "dns": {
+        "fakeip": {
+            "enabled": true,
+            "inet4_range": "198.18.0.0/15",
+            "inet6_range": "fc00::/18"
+        },
+        "independent_cache": true,
+        "rules": [
+            {
+                "domain": [
+                    "cdn.jsdelivr.net"
+                ],
+                "server": "localDns"
+            },
+            {
+                "geosite": "category-ads-all",
+                "server": "block"
+            },
+            {
+                "domain_suffix": [
+                    ".xn--ngstr-lra8j.com",
+                    ".googleapis.cn",
+                    ".dev",
+                    ".github.com"
+                ],
+                "geosite": "tiktok",
+                "server": "proxyDns"
+            },
+            {
+                "disable_cache": true,
+                "outbound": "any",
+                "server": "localDns"
+            },
+            {
+                "domain": "www.gstatic.com",
+                "domain_keyword": [
+                    "ntp",
+                    "wx.qlogo",
+                    "weixin",
+                    "wechat",
+                    "wxpay",
+                    "wxmp",
+                    "miniprogram",
+                    "tencent",
+                    "tenpay"
+                ],
+                "domain_regex": "^(alt[1-8]-)?mtalk4?(-(staging|dev))?\\.google\\.com$",
+                "domain_suffix": [
+                    ".push.apple.com"
+                ],
+                "geosite": "cn",
+                "server": "localDns"
+            },
+            {
+                "clash_mode": "direct",
+                "server": "localDns"
+            },
+            {
+                "geosite": "geolocation-!cn",
+                "server": "proxyDns"
+            },
+            {
+                "clash_mode": "global",
+                "server": "proxyDns"
+            },
+            {
+                "query_type": [
+                    "A",
+                    "AAAA"
+                ],
+                "server": "remote"
+            }
+        ],
+        "servers": [
+            {
+                "address": "tcp://8.8.8.8",
+                "detour": "proxy",
+                "tag": "proxyDns"
+            },
+            {
+                "address": "quic://223.5.5.5",
+                "detour": "direct",
+                "tag": "localDns"
+            },
+            {
+                "address": "rcode://success",
+                "tag": "block"
+            },
+            {
+                "address": "fakeip",
+                "tag": "remote"
+            }
+        ],
+        "strategy": "ipv4_only"
+    },
+    "experimental": {
+        "clash_api": {
+            "cache_file": "",
+            "cache_id": "",
+            "default_mode": "rule",
+            "external_controller": "0.0.0.0:9090",
+            "external_ui": "ui",
+            "external_ui_download_detour": "auto",
+            "external_ui_download_url": "https://github.com/CHIZI-0618/yacd/archive/refs/heads/gh-pages.zip",
+            "secret": "",
+            "store_selected": true
+        }
+    },
+    "inbounds": [
+        {
+            "type": "tun",
+            "inet4_address": "172.19.0.1/30",
+            "interface_name": "sing-box-tun-zy",
+            "mtu": 9000,
+            "auto_route": true,
+            "strict_route": true,
+            "sniff": true,
+            "endpoint_independent_nat": false,
+            "stack": "system"
+          }
+    ],
+    "log": {
+        "level": "info",
+        "timestamp": true
+    },
+    "outbounds": [
+        {
+            "tag":"proxy",
+            "type":"selector",
+            "outbounds":[
+              "auto",
+              "direct",
+              "{all}"
+            ],
+            "default":"auto"
+          },
+          {
+            "tag":"auto",
+            "type":"urltest",
+            "outbounds":[
+              "{all}"
+            ],
+            "filter": [
+                {"action":"exclude", "keywords":["官网|到期|剩余|距离|套餐|倍"]}
+            ],
+            "url": "http://www.gstatic.com/generate_204",
+            "interval": "5m",
+            "tolerance": 50
+          },
+          {
+            "tag":"🤖 OpenAI",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "{all}"
+            ],
+            "default": "proxy",
+            "filter":[
+              {"action":"include","keywords":["GPT"]}
+            ]
+          },
+          {
+            "tag":"🌌 Google",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"📟 Telegram",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🐦 Twitter",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"👤 Facebook",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🛍️ Amazon",
+            "type":"selector",
+            "outbounds":[
+              "direct",
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🍎 Apple",
+            "type":"selector",
+            "outbounds":[
+              "direct",
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🧩 Microsoft",
+            "type":"selector",
+            "outbounds":[
+              "direct",
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🎮 Game",
+            "type":"selector",
+            "outbounds":[
+              "direct",
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"📺 Bilibili",
+            "type":"selector",
+            "outbounds":[
+              "direct",
+              "proxy",
+              "{all}"
+            ],
+            "filter":[
+              {"action":"include","keywords":["🇭🇰|HK|hk|香港|港|🇹🇼|TW|tw|台湾|臺灣|台"]}
+            ]
+          },
+          {
+            "tag":"🎬 MediaVideo",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "direct",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🌏 !cn",
+            "type":"selector",
+            "outbounds":[
+              "proxy",
+              "direct",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🌏 cn",
+            "type":"selector",
+            "outbounds":[
+              "direct",
+              "proxy",
+              "{all}"
+            ]
+          },
+          {
+            "tag":"🛑 AdBlock",
+            "type":"selector",
+            "outbounds":[
+              "block",
+              "direct"
+            ]
+          },
+          {
+            "type": "direct",
+            "tag": "direct"
+          },
+          {
+            "type": "dns",
+            "tag": "dns-out"
+          },
+          {
+            "type": "block",
+            "tag": "block"
+          }
+    ],
+    "route": {
+        "auto_detect_interface": true,
+        "final": "proxy",
+        "geoip": {
+            "download_detour": "auto",
+            "download_url": "https://github.com/qaz617/geo-dat/releases/latest/download/geoip.db"
+        },
+        "geosite": {
+            "download_detour": "auto",
+            "download_url": "https://github.com/qaz617/geo-dat/releases/latest/download/geosite.db"
+        },
+        "rules": [
+            {
+                "outbound": "dns-out",
+                "protocol": "dns"
+            },
+	        {
+                "process_name": [
+                    "kdeconnect-indicator.exe",
+                    "kdeconnectd.exe",
+                    "WeChat.exe",
+                    "WeChatAppEx.exe",
+		            "WeLink.exe",
+		            "Adguard.exe"
+                ],
+                "outbound": "direct"
+            },
+            {
+                "clash_mode": "direct",
+                "outbound": "direct"
+            },
+            {
+                "clash_mode": "global",
+                "outbound": "proxy"
+            },
+            {
+                "domain": [
+                    "clash.razord.top",
+                    "yacd.metacubex.one",
+                    "yacd.haishan.me",
+                    "d.metacubex.one"
+                ],
+                "outbound": "direct"
+            },
+            {
+                "domain_keyword": [
+                    "ntp",
+                    "wx.qlogo",
+                    "weixin",
+                    "wechat",
+                    "wxpay",
+                    "wxmp",
+                    "miniprogram",
+                    "tencent",
+                    "tenpay"
+                ],
+                "domain_regex": "^(alt[1-8]-)?mtalk4?(-(staging|dev))?\\.google\\.com$",
+                "domain_suffix": [
+                    ".push.apple.com"
+                ],
+                "geosite": "cn",
+                "outbound": "direct"
+            },
+            {
+                "geosite": "category-ads-all",
+                "outbound": "🛑 AdBlock"
+              },
+              {
+                "domain": [
+                  "clash.razord.top",
+                  "yacd.metacubex.one",
+                  "yacd.haishan.me",
+                  "d.metacubex.one"
+                ],
+                "outbound": "direct"
+              },
+              {
+                "geosite":"openai",
+                "outbound":"🤖 OpenAI"
+              },
+              {
+                "geosite":"youtube",
+                "outbound":"🌌 Google"
+              },
+              
+              {
+                "geosite":["google","github"],
+                "outbound":"🌌 Google"
+              },
+              {
+                "geosite":"telegram",
+                "outbound":"📟 Telegram"
+              },
+              {
+                "geosite":"twitter",
+                "outbound":"🐦 Twitter"
+              },
+             
+              {
+                "geosite":["facebook","instagram"],
+                "outbound":"👤 Facebook"
+              },
+              {
+                "geosite":"amazon",
+                "outbound":"🛍️ Amazon"
+              },
+              {
+                "geosite":"apple",
+                "outbound":"🍎 Apple"
+              },
+              {
+                "geosite":"apple-cn",
+                "outbound":"🍎 Apple"
+              },
+              {
+                "geosite":"microsoft",
+                "outbound":"🧩 Microsoft"
+              },
+              {
+                "geosite":"category-games",
+                "outbound":"🎮 Game"
+              },
+              {
+                "geosite":"bilibili",
+                "outbound":"📺 Bilibili"
+              },
+              
+              {
+                "geosite":["tiktok","netflix","hbo","disney","primevideo"],
+                "outbound":"🎬 MediaVideo"
+              },
+              {
+                "geosite":"geolocation-!cn",
+                "outbound":"🌏 !cn"
+              },
+              {
+                "geoip":"google",
+                "outbound":"🌌 Google"
+              },
+              {
+                "geoip": ["private","cn"],
+                "outbound": "🌏 cn"
+              },
+              {
+                "geoip":"telegram",
+                "outbound":"📟 Telegram"
+              },
+              {
+                "geoip":"twitter",
+                "outbound":"🐦 Twitter"
+              },
+              {
+                "geoip":"facebook",
+                "outbound":"👤 Facebook"
+              },{
+                "geoip":"netflix",
+                "outbound":"🎬 MediaVideo"
+              },
+              {
+                "geosite": "cn",
+                "outbound": "🌏 cn"
+              }
+        ]
+    }
+}

@@ -6,7 +6,7 @@
             "enabled": true,
             "emoji": 1,
             "prefix": "",
-            "User-Agent":"v2rayng"
+            "User-Agent":"clash"
         },
         {
             "url": "URL LINK",
@@ -21,7 +21,7 @@
         "proxy": "",
         "direct": ""
     },
-    "save_config_path": "./config.json",
+    "save_config_path": "./win.json",
     "auto_backup": false,
     "exclude_protocol":"ssr",
     "config_template": "",

@@ -11,3 +11,5 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
+config.json
+生成的json配置/
