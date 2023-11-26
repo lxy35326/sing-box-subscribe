@@ -22,7 +22,7 @@ def parse(data):
     }
     if netquery.get('flow'):
         node['flow'] = 'xtls-rprx-vision'
-    if netquery.get('security', '') not in ['None', '']:
+    if netquery.get('security', '') not in ['None', 'none', '']:
         node['tls'] = {
             'enabled': True,
             'insecure': True,
@@ -35,7 +35,7 @@ def parse(data):
         if netquery.get('fp'):
             node['tls']['utls'] = {
                 'enabled': True,
-                'fingerprint': netquery.get('fp', 'chrome')
+                'fingerprint': netquery['fp']
             }
         if netquery['security'] == 'reality':
             node['tls']['reality'] = {
@@ -67,7 +67,7 @@ def parse(data):
                         node['tls']['server_name'] = node['transport']['headers']['Host']
             if '?ed=' in netquery.get('path'):
                 node['transport']['early_data_header_name'] = 'Sec-WebSocket-Protocol'
-                node['transport']['max_early_data'] = int(netquery.get('path').rsplit("?ed=")[1])
+                node['transport']['max_early_data'] = int(re.search(r'\d+', netquery.get('path').rsplit("?ed=")[1]).group())
         if netquery['type'] == 'grpc':
             node['transport'] = {
                 'type':'grpc',

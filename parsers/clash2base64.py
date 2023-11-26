@@ -58,21 +58,21 @@ def clash2v2ray(share_link):
         base_link = base64.b64encode("{cipher}:{password}".format(**ss_info).encode('utf-8')).decode('utf-8')
         if share_link.get('plugin'):
             ss_info["plugin"] = share_link['plugin']
-            if share_link.get('plugin') == 'shadow-tls':
-                ss_info["shadowtls_password"] = share_link['plugin-opts']['password']
-                ss_info["version"] = share_link['plugin-opts']['version']
-                ss_info["host"] = share_link['plugin-opts']['host']
-                shadowtls = f'{{"version": "{ss_info["version"]}", "host": "{ss_info["host"]}","password": "{ss_info["shadowtls_password"]}"}}'
-                url_link = f'?shadow-tls={base64.b64encode(shadowtls.encode()).decode()}'
             if share_link.get('plugin') == 'obfs':
                 ss_info["mode"] = share_link['plugin-opts']['mode']
                 ss_info["host"] = share_link['plugin-opts']['host']
-                url_link = '/?plugin={plugin}%3Bobfs%3D{mode}%3Bobfs-host%3D{host}'.format(**ss_info)
+                url_link = '?plugin=obfs-local%3Bobfs%3D{mode}%3Bobfs-host%3D{host}'.format(**ss_info)
             if share_link.get('plugin') == 'v2ray-plugin':
                 ss_info["obfs"] = share_link['plugin-opts']['mode']
                 ss_info["obfs-host"] = share_link['plugin-opts'].get('host','cloudfront.com')
                 v2ray_plugin = f'{{"mode": "{ss_info["obfs"]}", "host": "{ss_info["obfs-host"]}"}}'
                 url_link = f'?v2ray-plugin={base64.b64encode(v2ray_plugin.encode()).decode()}'
+            if share_link.get('plugin') == 'shadow-tls':
+                ss_info["shadowtls_password"] = share_link['plugin-opts']['password']
+                ss_info["version"] = share_link['plugin-opts']['version']
+                ss_info["host"] = share_link['plugin-opts']['host']
+                shadowtls = f'{{"version": "{ss_info["version"]}", "host": "{ss_info["host"]}","password": "{ss_info["shadowtls_password"]}"}}'
+                url_link += f'?shadow-tls={base64.b64encode(shadowtls.encode()).decode()}'
             link = "ss://{base_link}@{server}:{port}{url_link}".format(base_link=base_link, url_link=url_link, **ss_info)
         else:
             link = "ss://{base_link}@{server}:{port}".format(base_link=base_link, **ss_info)
@@ -160,8 +160,11 @@ def clash2v2ray(share_link):
             'allowInsecure': '0' if share_link.get('skip-cert-verify') == False else '1',
             "name": quote(share_link['name'], 'utf-8')
         }
-        if vless_info['type'] == 'ws':
+        if share_link.get('tls') == False:
+            vless_info["security"] = 'none'
+        else:
             vless_info["security"] = 'tls'
+        if vless_info['type'] == 'ws':
             vless_info["path"] = quote(share_link['ws-opts'].get('path', ''), 'utf-8')
             vless_info["host"] = share_link['ws-opts'].get('headers', {}).get('Host', '')
             link = "vless://{uuid}@{server}:{port}?encryption=none&security={security}&sni={sni}&fp={fp}&type={type}&host={host}&path={path}&flow={flow}&allowInsecure={allowInsecure}".format(**vless_info)
@@ -176,7 +179,6 @@ def clash2v2ray(share_link):
                 vless_info["sid"] = share_link.get('reality-opts', {}).get('short-id', '')
                 link = "vless://{uuid}@{server}:{port}?encryption=none&security={security}&sni={sni}&type={type}&serviceName={serviceName}&fp={fp}&flow={flow}&allowInsecure={allowInsecure}&pbk={pbk}&sid={sid}".format(**vless_info)
             else:
-                vless_info["security"] = 'tls'
                 link = "vless://{uuid}@{server}:{port}?encryption=none&security={security}&sni={sni}&type={type}&serviceName={serviceName}&fp={fp}&flow={flow}&allowInsecure={allowInsecure}".format(**vless_info)
         if vless_info['type'] == 'tcp':
             if share_link.get('reality-opts'):
@@ -185,10 +187,6 @@ def clash2v2ray(share_link):
                 vless_info["sid"] = share_link.get('reality-opts', {}).get('short-id', '')
                 link = "vless://{uuid}@{server}:{port}?encryption=none&security={security}&sni={sni}&serverName={sni}&type={type}&fp={fp}&flow={flow}&allowInsecure={allowInsecure}&pbk={pbk}&sid={sid}".format(**vless_info)
             else:
-                if share_link.get('tls') == False:
-                    vless_info["security"] = 'none'
-                else:
-                    vless_info["security"] = 'tls'
                 link = "vless://{uuid}@{server}:{port}?encryption=none&security={security}&sni={sni}&serverName={sni}&type={type}&fp={fp}&flow={flow}&allowInsecure={allowInsecure}".format(**vless_info)
         if share_link.get('smux',{}).get('enabled', '') == True:
             vless_info["protocol"] = share_link['smux']['protocol']
@@ -260,7 +258,7 @@ def clash2v2ray(share_link):
             "ip": share_link['ip'],
             "name": quote(share_link['name'], 'utf-8')
         }
-        warp_info['reserved'] = '0,0,0'
+        #warp_info['reserved'] = '0,0,0'
         if type(share_link.get('reserved')) == str:
             warp_info['reserved'] = share_link.get('reserved', '')
         else:
@@ -268,9 +266,15 @@ def clash2v2ray(share_link):
                 warp_info['reserved'] = ','.join(str(item) for item in share_link.get('reserved'))
         if share_link.get('ipv6'):
             warp_info['ipv6'] = share_link['ipv6']
-            link = "wg://{server}:{port}?publicKey={publicKey}&privateKey={privateKey}&presharedKey={presharedKey}&ip={ip},{ipv6}&udp=1&reserved={reserved}#{name}".format(**warp_info)
+            if warp_info.get('reserved'):
+                link = "wg://{server}:{port}?publicKey={publicKey}&privateKey={privateKey}&presharedKey={presharedKey}&ip={ip},{ipv6}&udp=1&reserved={reserved}#{name}".format(**warp_info)
+            else:
+                link = "wg://{server}:{port}?publicKey={publicKey}&privateKey={privateKey}&presharedKey={presharedKey}&ip={ip},{ipv6}&udp=1#{name}".format(**warp_info)
         else:
-            link = "wg://{server}:{port}?publicKey={publicKey}&privateKey={privateKey}&presharedKey={presharedKey}&ip={ip}&udp=1&reserved={reserved}#{name}".format(**warp_info)
+            if warp_info.get('reserved'):
+                link = "wg://{server}:{port}?publicKey={publicKey}&privateKey={privateKey}&presharedKey={presharedKey}&ip={ip}&udp=1&reserved={reserved}#{name}".format(**warp_info)
+            else:
+                link = "wg://{server}:{port}?publicKey={publicKey}&privateKey={privateKey}&presharedKey={presharedKey}&ip={ip}&udp=1#{name}".format(**warp_info)
         return link
         # TODO
     elif share_link['type'] == 'http':
